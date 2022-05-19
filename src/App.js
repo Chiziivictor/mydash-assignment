@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import Register from "./components/Register/Register";
 
 function App() {
-  const [loading, setLoading] = useState(true);
-  const [tours, setTours] = useState([]);
-
-  return <main></main>;
+  return (
+    <main>
+      <Register />
+    </main>
+  );
 }
 
 export default App;
