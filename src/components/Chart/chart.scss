@@ -1,14 +1,29 @@
 .dchart {
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: #f6f6f6;
 
+  .mobile {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    background: #f6f6f6;
+    z-index: 100;
+    display: none;
+    place-items: center;
+    text-align: center;
+
+    @media screen and (max-width: 600px) {
+      display: grid;
+    }
+  }
+
   &__title {
-    padding-top: 10vh;
-    font-size: 30px;
+    padding: 5vh 0;
+    font-size: 20px;
     text-align: center;
 
     h1 {
@@ -17,7 +32,7 @@
     }
 
     p {
-      font-size: 0.6em;
+      font-size: 0.7em;
       opacity: 0.6;
 
       span {
@@ -44,19 +59,10 @@
   }
 
   svg {
-    padding: 20px;
-    transform: rotate(-90deg);
-  }
-
-  button {
-    position: absolute;
-    bottom: 10%;
-    padding: 10px 20px;
-    background: rgba(45, 137, 235, 0.8);
-    border: none;
-    border-radius: 3px;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
+    // color: rgba(0, 0, 0, 0.1);
+    rect {
+      fill: rgb(116, 176, 240);
+    }
+    transform: translateX(-10%);
   }
 }

@@ -1,41 +1,118 @@
 import "./chart.scss";
 
-import React from "react";
-import * as d3 from "d3";
-import { useRef } from "react";
+import {
+  select,
+  scaleLinear,
+  max,
+  scaleBand,
+  axisLeft,
+  axisBottom,
+  format,
+} from "d3";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Chart = () => {
-  const svgRef = useRef();
+  const navigate = useNavigate();
 
-  const barHeight = 30;
+  const data = [
+    { country: "China", population: 1415046 },
+    { country: "India", population: 1354052 },
+    { country: "United States", population: 326767 },
+    { country: "Indonesia", population: 266795 },
+    { country: "Brazil", population: 210868 },
+    { country: "Pakistan", population: 200814 },
+    { country: "Nigeria", population: 195875 },
+    { country: "Bangladesh", population: 166368 },
+    { country: "Russia", population: 143965 },
+    { country: "Mexico", population: 130759 },
+  ];
 
   useEffect(() => {
-    const numbers = Array.from({ length: 30 }, () =>
-      Math.floor(Math.random() * 30)
-    );
-    d3.select(svgRef.current)
-      .selectAll("rect")
-      .data(numbers)
-      .enter()
-      .append("rect")
-      .attr("width", (d) => d * 10)
-      .attr("height", barHeight - 4)
-      .attr("transform", (d, i) => "translate(100," + i * barHeight + ")");
+    const titleText = "Top 10 Most Populous Countries (2017)";
+    const xAxisLabelText = "Population";
+
+    const svg = select("svg");
+
+    const width = +svg.attr("width");
+    const height = +svg.attr("height");
+
+    const render = (data) => {
+      const xValue = (d) => d["population"];
+      const yValue = (d) => d.country;
+      const margin = { top: 50, right: 40, bottom: 77, left: 180 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      const xScale = scaleLinear()
+        .domain([0, max(data, xValue)])
+        .range([0, innerWidth]);
+
+      const yScale = scaleBand()
+        .domain(data.map(yValue))
+        .range([0, innerHeight])
+        .padding(0.1);
+
+      const g = svg
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      const xAxisTickFormat = (number) =>
+        format(".3s")(number).replace("G", "B");
+
+      const xAxis = axisBottom(xScale)
+        .tickFormat(xAxisTickFormat)
+        .tickSize(-innerHeight);
+
+      g.append("g")
+        .call(axisLeft(yScale))
+        .selectAll(".domain, .tick line")
+        .remove();
+
+      const xAxisG = g
+        .append("g")
+        .call(xAxis)
+        .attr("transform", `translate(0,${innerHeight})`);
+
+      xAxisG.select(".domain").remove();
+
+      xAxisG
+        .append("text")
+        .attr("class", "axis-label")
+        .attr("y", 65)
+        .attr("x", innerWidth / 2)
+        .attr("fill", "black")
+        .text(xAxisLabelText);
+
+      g.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("y", (d) => yScale(yValue(d)))
+        .attr("width", (d) => xScale(xValue(d)))
+        .attr("height", yScale.bandwidth());
+
+      g.append("text").attr("class", "title").attr("y", -10).text(titleText);
+    };
+
+    render(data);
   });
 
   return (
     <div className="dchart">
+      <div className="mobile">
+        Small width detected...
+        <br />
+        Please rotate your device to view chart...
+      </div>
       <div className="dchart__title">
         <h1>D3.js Chart</h1>
         <p>
-          Click <span onClick={() => window.location.reload()}>Reload</span> to
-          shuffle chart
+          Click <span onClick={() => navigate("/")}>here</span> to go back to
+          register page
         </p>
       </div>
-      <svg ref={svgRef} width="60vh" height="90vw"></svg>
-
-      <button onClick={() => window.location.reload()}>Reload</button>
+      <svg width="700" height="500"></svg>
     </div>
   );
 };
